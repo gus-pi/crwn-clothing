@@ -5,6 +5,9 @@ import {
 } from '../../utils/firebase/firebase.utils';
 import FormInput from '../form-input/form-input.components';
 
+import './sign-up-form.syles.scss';
+import Button from '../button/button.component';
+
 const defaultFormFields = {
   displayName: '',
   email: '',
@@ -56,8 +59,9 @@ const SignUpForm = () => {
   };
 
   return (
-    <div>
-      <h2>Sign up with you email and password</h2>
+    <div className="sign-up-container">
+      <h2>Don't have an account?</h2>
+      <span>Sign up with you email and password</span>
       <form onSubmit={handleSubmit}>
         <FormInput
           label="Display Name"
@@ -99,7 +103,7 @@ const SignUpForm = () => {
             value: confirmPassword,
           }}
         />
-        <button type="submit">Sign Up</button>
+        <Button type="submit">Sign Up</Button>
       </form>
     </div>
   );
