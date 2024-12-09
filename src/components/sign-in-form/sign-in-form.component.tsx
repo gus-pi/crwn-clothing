@@ -36,7 +36,18 @@ const SignInForm = () => {
       );
       console.log(response);
       resetFormFields();
-    } catch (error: any) {}
+    } catch (error: any) {
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          alert('Wrong credentials');
+          break;
+        case 'auth/user-not-found':
+          alert('User does not exist');
+          break;
+        default:
+          console.log(error);
+      }
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,8 +82,8 @@ const SignInForm = () => {
         />
         <div className="buttons-container">
           <Button type="submit">Sign In</Button>
-          <Button buttonType="google" onClick={signInWithGoogle}>
-            Sign In with Google
+          <Button buttonType="google" type="button" onClick={signInWithGoogle}>
+            Google Sign In
           </Button>
         </div>
       </form>
