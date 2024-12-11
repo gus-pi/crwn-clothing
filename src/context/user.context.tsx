@@ -1,4 +1,15 @@
-import { createContext, Dispatch, SetStateAction, useState } from 'react';
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
+import {
+  createUserDocumentFromAuth,
+  onAuthStateChangedListener,
+  signOutUser,
+} from '../utils/firebase/firebase.utils';
 
 type User = {
   email: string | null;
@@ -15,5 +26,18 @@ export const UserContext = createContext<{
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const value = { currentUser, setCurrentUser };
+
+  signOutUser();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChangedListener((user: User) => {
+      if (user) {
+        createUserDocumentFromAuth(user);
+      }
+      setCurrentUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
