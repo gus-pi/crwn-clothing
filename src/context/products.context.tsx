@@ -1,7 +1,7 @@
 import { createContext, useState } from 'react';
 import PRODUCTS from '../../src/shop-data.json';
 
-type Product = {
+export type Product = {
   id: number;
   name: string;
   imageUrl: string;
