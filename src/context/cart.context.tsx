@@ -1,4 +1,10 @@
-import { createContext, Dispatch, SetStateAction, useState } from 'react';
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
 import { CartProduct, Product } from '../utils/types/types';
 
 const addCartItem = (cartItems: CartProduct[], productToAdd: Product) => {
@@ -22,21 +28,38 @@ export const CartContext = createContext<{
   setIsCartOpen: Dispatch<SetStateAction<boolean | null>>;
   cartItems: CartProduct[] | null;
   addItemToCart: (productToAdd: Product) => void;
+  cartCount: number;
 }>({
   isCartOpen: false,
   setIsCartOpen: () => {},
   cartItems: [],
   addItemToCart: () => {},
+  cartCount: 0,
 });
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [isCartOpen, setIsCartOpen] = useState<boolean | null>(false);
   const [cartItems, setCartItems] = useState<CartProduct[]>([]);
+  const [cartCount, setCartCount] = useState(0);
 
   const addItemToCart = (productToAdd: Product) => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
 
-  const value = { isCartOpen, setIsCartOpen, addItemToCart, cartItems };
+  const value = {
+    isCartOpen,
+    setIsCartOpen,
+    addItemToCart,
+    cartItems,
+    cartCount,
+  };
+
+  useEffect(() => {
+    const newCartCount = cartItems.reduce(
+      (total, cartItem) => total + cartItem.quantity,
+      0
+    );
+    setCartCount(newCartCount);
+  }, [cartItems]);
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
