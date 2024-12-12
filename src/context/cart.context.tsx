@@ -8,11 +8,11 @@ import {
 import { CartProduct, Product } from '../utils/types/types';
 
 const addCartItem = (cartItems: CartProduct[], productToAdd: Product) => {
-  const exisitingCartItems = cartItems.find(
+  const existingCartItems = cartItems.find(
     (cartItem) => cartItem.id === productToAdd.id
   );
 
-  if (exisitingCartItems) {
+  if (existingCartItems) {
     return cartItems.map((cartItem) =>
       cartItem.id == productToAdd.id
         ? { ...cartItem, quantity: cartItem.quantity + 1 }
@@ -23,17 +23,39 @@ const addCartItem = (cartItems: CartProduct[], productToAdd: Product) => {
   return [...cartItems, { ...productToAdd, quantity: 1 }];
 };
 
+const removeCartItem = (
+  cartItems: CartProduct[],
+  cartItemToRemove: Product
+) => {
+  const existingCartItems = cartItems.find(
+    (cartItem) => cartItem.id === cartItemToRemove.id
+  );
+
+  //check if quanity is equal to 1, if it is remove the item from the cart
+  if (existingCartItems?.quantity === 1) {
+    return cartItems.filter((cartItem) => cartItem.id !== cartItemToRemove.id);
+  } else {
+    return cartItems.map((cartItem) =>
+      cartItem.id == cartItemToRemove.id
+        ? { ...cartItem, quantity: cartItem.quantity - 1 }
+        : cartItem
+    );
+  }
+};
+
 export const CartContext = createContext<{
   isCartOpen: boolean | null;
   setIsCartOpen: Dispatch<SetStateAction<boolean | null>>;
   cartItems: CartProduct[] | null;
   addItemToCart: (productToAdd: Product) => void;
+  removeItemToCart: (productToAdd: Product) => void;
   cartCount: number;
 }>({
   isCartOpen: false,
   setIsCartOpen: () => {},
   cartItems: [],
   addItemToCart: () => {},
+  removeItemToCart: () => {},
   cartCount: 0,
 });
 
@@ -46,10 +68,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
 
+  const removeItemToCart = (cartItemToRemove: Product) => {
+    setCartItems(removeCartItem(cartItems, cartItemToRemove));
+  };
+
   const value = {
     isCartOpen,
     setIsCartOpen,
     addItemToCart,
+    removeItemToCart,
     cartItems,
     cartCount,
   };
