@@ -1,11 +1,6 @@
+import { Category } from '../../utils/types/types';
 import CategoryItem from '../category-item/category-item.component';
 import './directory.styles.scss';
-
-type Category = {
-  id: number;
-  title: string;
-  imageUrl: string;
-};
 
 const Directory = ({ categories }: { categories: Category[] }) => {
   return (

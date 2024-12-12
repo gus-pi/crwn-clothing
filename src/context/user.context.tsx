@@ -10,10 +10,7 @@ import {
   onAuthStateChangedListener,
   signOutUser,
 } from '../utils/firebase/firebase.utils';
-
-type User = {
-  email: string | null;
-};
+import { User } from '../utils/types/types';
 
 export const UserContext = createContext<{
   currentUser: User | null;
