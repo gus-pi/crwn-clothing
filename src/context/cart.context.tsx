@@ -43,42 +43,57 @@ const removeCartItem = (
   }
 };
 
+const clearCartItem = (cartItems: CartProduct[], cartItemToClear: Product) => {
+  return cartItems.filter((cartItem) => cartItem.id !== cartItemToClear.id);
+};
+
 export const CartContext = createContext<{
   isCartOpen: boolean | null;
   setIsCartOpen: Dispatch<SetStateAction<boolean | null>>;
   cartItems: CartProduct[] | null;
   addItemToCart: (productToAdd: Product) => void;
-  removeItemToCart: (productToAdd: Product) => void;
+  removeItemFromCart: (productToAdd: Product) => void;
+  clearItemFromCart: (productToAdd: Product) => void;
   cartCount: number;
+  cartTotal: number;
 }>({
   isCartOpen: false,
   setIsCartOpen: () => {},
   cartItems: [],
   addItemToCart: () => {},
-  removeItemToCart: () => {},
+  removeItemFromCart: () => {},
+  clearItemFromCart: () => {},
   cartCount: 0,
+  cartTotal: 0,
 });
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [isCartOpen, setIsCartOpen] = useState<boolean | null>(false);
   const [cartItems, setCartItems] = useState<CartProduct[]>([]);
   const [cartCount, setCartCount] = useState(0);
+  const [cartTotal, setCartTotal] = useState(0);
 
   const addItemToCart = (productToAdd: Product) => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
 
-  const removeItemToCart = (cartItemToRemove: Product) => {
+  const removeItemFromCart = (cartItemToRemove: Product) => {
     setCartItems(removeCartItem(cartItems, cartItemToRemove));
+  };
+
+  const clearItemFromCart = (cartItemToClear: Product) => {
+    setCartItems(clearCartItem(cartItems, cartItemToClear));
   };
 
   const value = {
     isCartOpen,
     setIsCartOpen,
     addItemToCart,
-    removeItemToCart,
+    removeItemFromCart,
+    clearItemFromCart,
     cartItems,
     cartCount,
+    cartTotal,
   };
 
   useEffect(() => {
@@ -88,5 +103,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
     setCartCount(newCartCount);
   }, [cartItems]);
+
+  useEffect(() => {
+    const newCartTotal = cartItems.reduce(
+      (total, cartItem) => total + cartItem.quantity * cartItem.price,
+      0
+    );
+    setCartTotal(newCartTotal);
+  }, [cartItems]);
+
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
