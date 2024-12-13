@@ -10,7 +10,7 @@ import {
   signInWithRedirect,
   signOut,
 } from 'firebase/auth';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getFirestore, setDoc, writeBatch } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -41,6 +41,19 @@ export const signInWithGoogleRedirect = () => {
 };
 
 export const db = getFirestore();
+
+export const addCollectionAndDocuments = async (collectionKey: string, objectsToAdd: any) => {
+  const collectionRef = collection(db, collectionKey);
+  const batch = writeBatch(db)
+
+  objectsToAdd.forEach((object: any) => {
+    const docRef = doc(collectionRef, object.title.toLowerCase())
+    batch.set(docRef, object)
+  })
+
+  await batch.commit()
+  console.log('done')
+}
 
 export const createUserDocumentFromAuth = async (
   userAuth: any,
@@ -93,3 +106,4 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback: any) =>
   onAuthStateChanged(auth, callback);
+
