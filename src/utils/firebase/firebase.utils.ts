@@ -10,7 +10,7 @@ import {
   signInWithRedirect,
   signOut,
 } from 'firebase/auth';
-import { collection, doc, getDoc, getFirestore, setDoc, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, query, setDoc, writeBatch } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -54,6 +54,21 @@ export const addCollectionAndDocuments = async (collectionKey: string, objectsTo
   await batch.commit()
   console.log('done')
 }
+
+export const getCategoriesAndDocuments = async () => {
+  const collectionRef = collection(db, 'categories');
+  const q = query(collectionRef)
+
+  const querySnapshot = await getDocs(q)
+
+  const categoryMap = querySnapshot.docs.reduce((acc: any, docSnapShot) => {
+    const { title, items } = docSnapShot.data()
+    acc[title.toLowerCase()] = items;
+    return acc
+  }, {})
+  return categoryMap
+}
+
 
 export const createUserDocumentFromAuth = async (
   userAuth: any,
