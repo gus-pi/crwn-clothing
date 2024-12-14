@@ -24,7 +24,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const value = { currentUser, setCurrentUser };
 
-  signOutUser();
+  //signOutUser();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user: User) => {
