@@ -1,6 +1,15 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+interface StyledSpanProps {
+  onClick?: () => void;
+}
+
+export const StyledSpan = styled.span<StyledSpanProps>`
+  padding: 10px 15px;
+  cursor: pointer;
+`;
+
 export const NavigationContainer = styled.div`
   height: 70px;
   width: 100%;

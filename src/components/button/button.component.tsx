@@ -1,24 +1,36 @@
-import './button.styles.scss';
+import {
+  BaseButton,
+  GoogleSignInButton,
+  InvertedButton,
+} from './button.styles';
 
-const BUTTON_TYPES_CLASSES = {
-  google: 'google-sign-in',
+export const BUTTON_TYPES_CLASSES = {
+  base: 'base',
+  google: 'google',
   inverted: 'inverted',
-} as const; // Use `as const` to infer a readonly type for the object.
+} as const;
 
-type ButtonType = keyof typeof BUTTON_TYPES_CLASSES;
+type ButtonTypes = keyof typeof BUTTON_TYPES_CLASSES;
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  buttonType?: ButtonType; // Optional buttonType
   children: React.ReactNode;
+  buttonType: ButtonTypes;
 }
 
-const Button = ({ children, buttonType, ...otherProps }: ButtonProps) => {
-  const buttonClass = buttonType ? BUTTON_TYPES_CLASSES[buttonType] : ''; // Safely handle undefined or invalid buttonType
-  return (
-    <button className={`button-container ${buttonClass}`} {...otherProps}>
-      {children}
-    </button>
-  );
+const getButton = (buttonType: ButtonTypes = 'base') =>
+  ({
+    [BUTTON_TYPES_CLASSES.base]: BaseButton,
+    [BUTTON_TYPES_CLASSES.google]: GoogleSignInButton,
+    [BUTTON_TYPES_CLASSES.inverted]: InvertedButton,
+  }[BUTTON_TYPES_CLASSES[buttonType]]);
+
+const Button: React.FC<ButtonProps> = ({
+  children,
+  buttonType,
+  ...otherProps
+}) => {
+  const CustomButton = getButton(buttonType);
+  return <CustomButton {...otherProps}>{children}</CustomButton>;
 };
 
 export default Button;
