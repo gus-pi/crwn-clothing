@@ -8,7 +8,6 @@ import {
 import {
   createUserDocumentFromAuth,
   onAuthStateChangedListener,
-  signOutUser,
 } from '../utils/firebase/firebase.utils';
 import { User } from '../utils/types/types';
 

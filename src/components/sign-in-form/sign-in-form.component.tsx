@@ -4,7 +4,6 @@ import FormInput from '../form-input/form-input.components';
 import './sign-in-form.styles.scss';
 import Button, { BUTTON_TYPES_CLASSES } from '../button/button.component';
 import {
-  createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
   signInWithGooglePopup,
 } from '../../utils/firebase/firebase.utils';
@@ -34,7 +33,7 @@ const SignInForm = () => {
         password
       );
       if (response) {
-        const { user } = response;
+        // const { user } = response;
         resetFormFields();
       } else {
         alert('Authentication failed.');
