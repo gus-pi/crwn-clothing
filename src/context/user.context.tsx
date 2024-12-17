@@ -1,32 +1,68 @@
-import {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, useEffect, useReducer } from 'react';
 import {
   createUserDocumentFromAuth,
   onAuthStateChangedListener,
 } from '../utils/firebase/firebase.utils';
 import { User } from '../utils/types/types';
 
-export const UserContext = createContext<{
+// Define the shape of the state
+interface UserState {
   currentUser: User | null;
-  setCurrentUser: Dispatch<SetStateAction<User | null>>;
-}>({
+}
+
+// Define action types
+export const USER_ACTION_TYPES = {
+  SET_CURRENT_USER: 'SET_CURRENT_USER',
+} as const;
+
+// Create a type for action objects
+type UserAction = {
+  type: typeof USER_ACTION_TYPES.SET_CURRENT_USER;
+  payload: User | null;
+};
+
+// Initial state
+const INITIAL_STATE: UserState = {
   currentUser: null,
-  setCurrentUser: () => null,
+};
+
+// Reducer function with proper typing
+const userReducer = (state: UserState, action: UserAction): UserState => {
+  const { type, payload } = action;
+  switch (type) {
+    case USER_ACTION_TYPES.SET_CURRENT_USER:
+      return { ...state, currentUser: payload };
+
+    default:
+      throw new Error(`Unhandled type ${type} in userReducer`);
+  }
+};
+
+// Context value type
+interface UserContextValue {
+  currentUser: User | null;
+  setCurrentUser: (user: User | null) => void;
+}
+
+// Create context with proper typing
+export const UserContext = createContext<UserContextValue>({
+  currentUser: null,
+  setCurrentUser: () => null, // Default no-op function
 });
 
+// Provider component
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const value = { currentUser, setCurrentUser };
+  const [state, dispatch] = useReducer(userReducer, INITIAL_STATE);
+  const { currentUser } = state;
 
-  //signOutUser();
+  const setCurrentUser = (user: User | null) => {
+    dispatch({ type: USER_ACTION_TYPES.SET_CURRENT_USER, payload: user });
+  };
+
+  const value: UserContextValue = { currentUser, setCurrentUser };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChangedListener((user: User) => {
+    const unsubscribe = onAuthStateChangedListener((user: User | null) => {
       if (user) {
         createUserDocumentFromAuth(user);
       }
